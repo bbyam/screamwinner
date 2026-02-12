@@ -26,12 +26,13 @@ namespace ScreamControl
             _host.Background = System.Windows.Media.Brushes.Black;
         }
 
-        private HostWindow _host;
+        private readonly HostWindow _host;
         private ScreamViewLib.ScreamView _screamView = null!;
 
-        private AudioSource _audioSource = new();
+        private readonly AudioSource _audioSource = new();
+        private ScreamOff _screamOff = null!;
 
-        private Meter _meter = null!;
+        private readonly List<IAnimation> _animations = [];
 
         private void ScreamControl_Load(object sender, EventArgs e)
         {
@@ -51,7 +52,6 @@ namespace ScreamControl
             var viewWidth = _host.Width;
             var viewHeight = _host.Height;
 #else
-            // TODO: Fit to second monitor
             var secondaryScreen = Screen.AllScreens.FirstOrDefault(s => s != primaryScreen);
             if (secondaryScreen == null)
             {
@@ -76,9 +76,9 @@ namespace ScreamControl
 
             _screamView.Background = new SolidColorBrush(Colors.Gray);
 
-            _meter = new(0.2, 0.8, 0.8, .1, .9);
-            _meter.AddToCanvas(_screamView);
+            _screamOff = new(_audioSource, _screamView);
 
+            _animations.Add(_screamOff);
             CompositionTarget.Rendering += Animate;
         }
 
@@ -89,29 +89,26 @@ namespace ScreamControl
 
         private void Animate(object? sender, EventArgs e)
         {
-            // TEMPORARY: Simulate audio input values for testing
-            if (_audioRunning)
+            foreach (var animation in _animations)
             {
-                var nextValue = _meter.MeterValue + 0.01;
-                if (nextValue > 1.0)
-                    nextValue = 0.0;
-                _meter.MeterValue = nextValue;
+                animation.OnAnimate();
             }
         }
 
-        private bool _audioRunning = false;
+        // TEMPORARY: Start/Stop ScreamOff
+        private bool _running = false;
         private void btnStartStop_Click(object sender, EventArgs e)
         {
-            if (!_audioRunning)
+            if (!_running)
             {
-                _audioSource.Start();
-                _audioRunning = true;
+                _screamOff.Start();
+                _running = true;
                 btnStartStop.Text = "Stop";
             }
             else
             {
-                _audioSource.Stop();
-                _audioRunning = false;
+                _screamOff.Stop();
+                _running = false;
                 btnStartStop.Text = "Start";
             }
         }

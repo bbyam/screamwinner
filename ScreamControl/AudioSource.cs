@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScreamControl
 {
-    internal class AudioSource
+    internal class AudioSource : IAudioSampler
     {
         private double _maxPeak = 0.0;
 
