@@ -11,7 +11,7 @@ Title(Arial,+2,FF0000)=Woo Hoo!
 Option1(,,FF0000)=First
 
 # Use font Times New Roman for Option 2, default size, color green
-Option2(Times New Roman,00FF00)=Second
+Option2(Times New Roman,,00FF00)=Second
 
 # Use default font (Arial), -2 points smaller than the default for Option 3, default color (white)
 Option3(,-2,)=Third
