@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Color = System.Windows.Media.Color;
 
 namespace ScreamControl
 {
@@ -15,6 +16,8 @@ namespace ScreamControl
     {
         private ScreamOffConfig _config;
         private Meter _meter = null!;
+        private Meter _meter2 = null!;
+        private Meter _meter3 = null!;
         private IAudioSampler _audioSampler;
         private ScreamViewLib.ScreamView _screamView;
 
@@ -27,6 +30,17 @@ namespace ScreamControl
         private System.Windows.Controls.Label _option2 = null!;
         private System.Windows.Controls.Label _option3 = null!;
 
+        private Color OutlineColor = Color.FromArgb(255, 200, 200, 200);
+        private Color BackgroundColor = Color.FromArgb(255, 60, 60, 60);
+        private Color SamplingColor = Color.FromArgb(255, 200, 180, 0);
+        private Color SamplingMaxlineColor = Color.FromArgb(255, 255, 255, 0);
+        private Color SamplingMaxBGColor = Color.FromArgb(255, 100, 90, 0);
+
+        private Color WinnerColor = Color.FromArgb(255, 0, 255, 0);
+        private Color LoserColor = Color.FromArgb(255, 255, 0, 0);
+
+        const double MeterRestValue = 0.01;
+
         public ScreamOff(IAudioSampler audioSampler, ScreamViewLib.ScreamView screamView, ScreamOffConfig config)
         {
             _config = config;
@@ -35,8 +49,14 @@ namespace ScreamControl
 
             _scaleFactor = _screamView.Width / 3840.0; // Base scale factor on a 3840x2160p screen
 
-            _meter = new(0.2, 0.7, 0.8, .1, .9);
+            _meter = new(0.2, 0.75, MeterRestValue, .1, .95);
             _meter.AddToCanvas(_screamView);
+            _meter2 = new(0.2, 0.75, MeterRestValue, .4, .95);
+            _meter2.AddToCanvas(_screamView);
+            _meter3 = new(0.2, 0.75, MeterRestValue, .7, .95);
+            _meter3.AddToCanvas(_screamView);
+
+            SetInitialColors();
 
             _title = CreateTextElement(0.2, 0.0, 0.6, 0.1, config.Title, 150, _screamView, _scaleFactor);
             _option1 = CreateTextElement(0.1, 0.1, 0.2, 0.1, config.Option1, 96, _screamView, _scaleFactor);
@@ -49,13 +69,19 @@ namespace ScreamControl
             }
         }
 
+        private void SetInitialColors()
+        {
+            _meter.SetColor(SamplingColor, OutlineColor, BackgroundColor, SamplingMaxlineColor, SamplingMaxBGColor);
+            _meter2.SetColor(SamplingColor, OutlineColor, BackgroundColor, SamplingMaxlineColor, SamplingMaxBGColor);
+            _meter3.SetColor(SamplingColor, OutlineColor, BackgroundColor, SamplingMaxlineColor, SamplingMaxBGColor);
+        }
+
         public static System.Windows.Controls.Label CreateTextElement(double xp, double yp, double wp, double hp, ScreamOffConfig.TextOption info, double fontSize, Canvas canvas, double scale)
         {
             var elem = new System.Windows.Controls.Label();
             canvas.Children.Add(elem);
             elem.Content = info.Text;
             elem.Foreground = new SolidColorBrush(info.TextColor);
-            //elem.Background = System.Windows.Media.Brushes.Black;
             elem.FontSize = (fontSize + info.FontAdjust) * scale;
             elem.Width = (int)(canvas.ActualWidth * wp);
             elem.Height = (int)(canvas.ActualHeight * hp);
@@ -108,18 +134,59 @@ namespace ScreamControl
                     nextValue = 0.0;
                 _meter.MeterValue = nextValue;
             }
+
+
+
+            // TEMPORARY: Testing multiple meters
+            if (_audioRunning)
+            {
+                var nextValue = _meter2.MeterValue + 0.009;
+                if (nextValue > 0.8)
+                    nextValue = 0.0;
+                _meter2.MeterValue = nextValue;
+            }
+            if (_audioRunning)
+            {
+                var nextValue = _meter3.MeterValue + 0.008;
+                if (nextValue > 0.6)
+                    nextValue = 0.0;
+                _meter3.MeterValue = nextValue;
+            }
         }
 
         public void Start()
         {
             _audioSampler.Start();
             _audioRunning = true;
+
+            SetInitialColors();
+
+            _meter.BeginMaxValue();
+            _meter2.BeginMaxValue();
+            _meter3.BeginMaxValue();
         }
 
         public void Stop()
         {
             _audioSampler.Stop();
             _audioRunning = false;
+
+            _meter.MeterValue = _meter.MaxValue;
+            _meter3.MeterValue = _meter3.MaxValue;
+            _meter2.MeterValue = _meter2.MaxValue;
+            var meter1Win = _meter.MaxValue >= _meter2.MaxValue && _meter.MaxValue >= _meter3.MaxValue;
+            var meter2Win = _meter2.MaxValue >= _meter.MaxValue && _meter2.MaxValue >= _meter3.MaxValue;
+            var meter3Win = _meter3.MaxValue >= _meter.MaxValue && _meter3.MaxValue >= _meter2.MaxValue;
+            var meter1FinalColor = meter1Win ? WinnerColor : LoserColor;
+            var meter2FinalColor = meter2Win ? WinnerColor : LoserColor;
+            var meter3FinalColor = meter3Win ? WinnerColor : LoserColor;
+            _meter.SetColor(meter1FinalColor, OutlineColor, BackgroundColor, meter1FinalColor, meter1FinalColor);
+            _meter2.SetColor(meter2FinalColor, OutlineColor, BackgroundColor, meter2FinalColor, meter2FinalColor);
+            _meter3.SetColor(meter3FinalColor, OutlineColor, BackgroundColor, meter3FinalColor, meter3FinalColor);
+
+            _meter.EndMaxValue();
+            _meter2.EndMaxValue();
+            _meter3.EndMaxValue();
         }
     }
 }
