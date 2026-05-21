@@ -1,8 +1,7 @@
 #define DEBUG_ONE_SCREEN
 
-using ScreamView;
 using ScreamViewLib;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Windows.Media;
 
 namespace ScreamControl

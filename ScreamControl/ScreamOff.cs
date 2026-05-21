@@ -11,6 +11,7 @@ namespace ScreamControl
     internal class ScreamOff : IAnimation
     {
         private Meter _meter = null!;
+
         private IAudioSampler _audioSampler;
         private ScreamViewLib.ScreamView _screamView;
 
@@ -19,6 +20,7 @@ namespace ScreamControl
         public ScreamOff(IAudioSampler audioSampler, ScreamViewLib.ScreamView screamView)
         {
             _audioSampler = audioSampler;
+
             _screamView = screamView;
 
             _meter = new(0.2, 0.8, 0.8, .1, .9);
@@ -47,6 +49,9 @@ namespace ScreamControl
         {
             _audioSampler.Stop();
             _audioRunning = false;
+
+            _meter.MeterValue = _audioSampler.GetMaxPeak();
+            MessageBox.Show($"Scream Peak: {_meter.MeterValue}", "Scream Off", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
