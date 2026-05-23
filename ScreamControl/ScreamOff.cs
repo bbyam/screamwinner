@@ -29,13 +29,9 @@ namespace ScreamControl
 
         public void OnAnimate()
         {
-            // TEMPORARY: Simulate audio input values for testing
             if (_audioRunning)
             {
-                var nextValue = _meter.MeterValue + 0.01;
-                if (nextValue > 1.0)
-                    nextValue = 0.0;
-                _meter.MeterValue = nextValue;
+                _meter.MeterValue = _audioSampler.GetMaxPeak();
             }
         }
 
@@ -49,9 +45,6 @@ namespace ScreamControl
         {
             _audioSampler.Stop();
             _audioRunning = false;
-
-            _meter.MeterValue = _audioSampler.GetMaxPeak();
-            MessageBox.Show($"Scream Peak: {_meter.MeterValue}", "Scream Off", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
