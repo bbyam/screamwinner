@@ -1,0 +1,26 @@
+# Example configuration file
+
+# Font sizes are based on a 2160p screen, and can be adjusted larger
+# or smaller than the default values used by the application. The
+# application defaults are based on the rendering of Arial.
+
+# Use font Arial for the title, +2 points larger than the default, color red
+Title(Arial,+2,FF0000)=Woo Hoo!
+
+# Use default font (Arial) and size for Option 1, default color (white)
+Option1(,,FF0000)=First
+
+# Use font Times New Roman for Option 2, default size, color green
+Option2(Times New Roman,,00FF00)=Second
+
+# Use default font (Arial), -2 points smaller than the default for Option 3, default color (white)
+Option3(,-2,)=Third
+
+# Example image to show, placed at 5% of the window width from the left,
+# and 10% of the window height from the top. Image files must be sized
+# for a 2160p screen, and will be scaled down on smaller screens.
+#Image(.05,.1)=example.png
+
+# Example second image to show, placed at 90% of the window width from the left,
+# and 10% of the window height from the top.
+#Image(0.9,.1)=example2.png

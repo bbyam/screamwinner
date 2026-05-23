@@ -3,6 +3,7 @@
 using ScreamViewLib;
 using System.Diagnostics;
 using System.Windows.Media;
+using Color = System.Windows.Media.Color;
 
 namespace ScreamControl
 {
@@ -35,6 +36,18 @@ namespace ScreamControl
 
         private void ScreamControl_Load(object sender, EventArgs e)
         {
+            ScreamOffConfig config = new();
+            try
+            {
+                config.LoadFromFile("screamoff.config");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load screamoff.config:" + Environment.NewLine + ex.Message, "Configuration Load Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+                return;
+            }
+
             var primaryScreen = Screen.PrimaryScreen ?? Screen.FromControl(this);
 
             var controlScreenSize = primaryScreen.Bounds;
@@ -73,9 +86,9 @@ namespace ScreamControl
             _screamView.Height = viewHeight;
             _host.Show();
 
-            _screamView.Background = new SolidColorBrush(Colors.Gray);
+            _screamView.Background = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
 
-            _screamOff = new(_audioSource, _screamView);
+            _screamOff = new(_audioSource, _screamView, config);
 
             _animations.Add(_screamOff);
             CompositionTarget.Rendering += Animate;
