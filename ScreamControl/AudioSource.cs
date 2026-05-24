@@ -19,14 +19,15 @@ namespace ScreamControl
             _waveIn.DataAvailable += OnDataAvailable;
         }
 
-        private void OnDataAvailable(object sender, WaveInEventArgs e)
+        private void OnDataAvailable(object? sender, WaveInEventArgs e)
         {
 
             for (int index = 0; index < e.BytesRecorded; index += 2)
             {
-                short sample = (short)((e.Buffer[index + 1] << 8) | e.Buffer[index]);
-                float sample32 = Math.Abs(sample / 32768f);
-                if (sample32 > _maxPeak) _maxPeak = sample32;
+                var sample = (short)((e.Buffer[index + 1] << 8) | e.Buffer[index]);
+                var sample32 = Math.Abs(sample / 32768f);
+                if (sample32 > _maxPeak)
+                    _maxPeak = sample32;
             }
         }
 
