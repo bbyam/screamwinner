@@ -11,16 +11,23 @@ namespace ScreamControl
     internal class AudioSource : IAudioSampler
     {
         private double _maxPeak = 0.0;
+        private bool _pendingReset = false;
         private WaveInEvent _waveIn = new();
 
         public AudioSource()
         {
             _waveIn.WaveFormat = new WaveFormat(44100, 16, 1);
+            _waveIn.BufferMilliseconds = 30;
             _waveIn.DataAvailable += OnDataAvailable;
         }
 
         private void OnDataAvailable(object? sender, WaveInEventArgs e)
         {
+            if (_pendingReset)
+            {
+                _maxPeak = 0.0;
+                _pendingReset = false;
+            }
 
             for (int index = 0; index < e.BytesRecorded; index += 2)
             {
@@ -53,11 +60,10 @@ namespace ScreamControl
 
         public double GetMaxPeak()
         {
-            // Return the current max peak and reset it to 0 for the next measurement period
-            var currentPeak = _maxPeak;
-            _maxPeak = 0.0;
+            // Flag max peak to reset on the next sample update
+            _pendingReset = true;
 
-            return currentPeak;
+            return _maxPeak;
         }
     }
 }
