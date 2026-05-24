@@ -1,7 +1,7 @@
 #define DEBUG_ONE_SCREEN
 
-using ScreamView;
 using ScreamViewLib;
+using System.Diagnostics;
 using System.Windows.Media;
 using Color = System.Windows.Media.Color;
 

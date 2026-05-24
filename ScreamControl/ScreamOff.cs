@@ -45,6 +45,7 @@ namespace ScreamControl
         {
             _config = config;
             _audioSampler = audioSampler;
+
             _screamView = screamView;
 
             _scaleFactor = _screamView.Width / 3840.0; // Base scale factor on a 3840x2160p screen
@@ -126,13 +127,9 @@ namespace ScreamControl
 
         public void OnAnimate()
         {
-            // TEMPORARY: Simulate audio input values for testing
             if (_audioRunning)
             {
-                var nextValue = _meter.MeterValue + 0.01;
-                if (nextValue > 1.0)
-                    nextValue = 0.0;
-                _meter.MeterValue = nextValue;
+                _meter.MeterValue = _audioSampler.GetMaxPeak();
             }
 
 
