@@ -15,16 +15,19 @@ namespace ScreamControl
         static ScreamOffConfig()
         {
             var assetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
-            assetPath += Path.DirectorySeparatorChar;
-            Uri fontUri = new Uri(assetPath, UriKind.Absolute);
-            foreach (System.Windows.Media.FontFamily fontFamily in Fonts.GetFontFamilies(fontUri))
+            if (Directory.Exists(assetPath))
             {
-                var fontName = fontFamily.Source;
-                if (fontName.StartsWith("./#"))
+                assetPath += Path.DirectorySeparatorChar;
+                Uri fontUri = new Uri(assetPath, UriKind.Absolute);
+                foreach (System.Windows.Media.FontFamily fontFamily in Fonts.GetFontFamilies(fontUri))
                 {
-                    fontName = fontName.Substring(3);
+                    var fontName = fontFamily.Source;
+                    if (fontName.StartsWith("./#"))
+                    {
+                        fontName = fontName.Substring(3);
+                    }
+                    _assetFonts.Add(fontName);
                 }
-                _assetFonts.Add(fontName);
             }
         }
 

@@ -40,12 +40,16 @@ namespace ScreamControl
 
         public void Start()
         {
+            _maxPeak = 0.0;
+            _pendingReset = true;
             _waveIn.StartRecording();
         }
 
         public void Stop()
         {
             _waveIn.StopRecording();
+            _maxPeak = 0.0;
+            _pendingReset = true;
         }
 
         public void Dispose()

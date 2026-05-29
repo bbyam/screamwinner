@@ -24,8 +24,9 @@ namespace ScreamControl
         private Color WinnerColor = Color.FromArgb(255, 0, 255, 0);
         private Color LoserColor = Color.FromArgb(255, 255, 0, 0);
 
-        const double MeterRestValue = 0.01;
+        private int _targetMeter = 0;
 
+        const double MeterRestValue = 0.01;
 
         public TripleMeter()
         {
@@ -46,31 +47,18 @@ namespace ScreamControl
 
         public void ReceiveValue(double value)
         {
-            _meters[0].MeterValue = value;
-
-            var nextValue = _meters[1].MeterValue + 0.009;
-            if (nextValue > 0.8)
-                nextValue = 0.0;
-            _meters[1].MeterValue = nextValue;
-
-            nextValue = _meters[2].MeterValue + 0.008;
-            if (nextValue > 0.6)
-                nextValue = 0.0;
-            _meters[2].MeterValue = nextValue;
+            _meters[_targetMeter].MeterValue = value;
         }
 
-        public void Start()
+        public void Start(int targetMeter)
         {
-            SetInitialColors();
+            _targetMeter = targetMeter;
 
-            _meters[0].BeginMaxValue();
-            _meters[1].BeginMaxValue();
-            _meters[2].BeginMaxValue();
+            _meters[_targetMeter].BeginMaxValue();
         }
 
-        public void Stop()
+        public void DetermineWinner()
         {
-
             _meters[0].MeterValue = _meters[0].MaxValue;
             _meters[2].MeterValue = _meters[2].MaxValue;
             _meters[1].MeterValue = _meters[1].MaxValue;

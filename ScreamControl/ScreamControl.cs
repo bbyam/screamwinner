@@ -13,6 +13,10 @@ namespace ScreamControl
         {
             InitializeComponent();
 
+            btnStartStop1.Enabled = false;
+            btnStartStop2.Enabled = false;
+            btnStartStop3.Enabled = false;
+
             _host = new();
             var viewChildren = _host.RootGrid.Children.OfType<global::ScreamViewLib.ScreamView>();
             var view = viewChildren.FirstOrDefault();
@@ -111,17 +115,51 @@ namespace ScreamControl
         private bool _running = false;
         private void btnStartStop_Click(object sender, EventArgs e)
         {
-            if (!_running)
+            var startEvent = ScreamEvents.EndScream;
+            Button? targetButton = sender as Button;
+            if (targetButton == null)
+                return;
+            Button? otherBtn1 = null;
+            Button? otherBtn2 = null;
+    
+            if (sender == btnStartStop1)
             {
-                _screamOff.Start();
-                _running = true;
-                btnStartStop.Text = "Stop";
+                startEvent = ScreamEvents.StartScream1;
+                otherBtn1 = btnStartStop2;
+                otherBtn2 = btnStartStop3;
+            }
+            else if (sender == btnStartStop2)
+            {
+                startEvent = ScreamEvents.StartScream2;
+                otherBtn1 = btnStartStop1;
+                otherBtn2 = btnStartStop3;
+            }
+            else if (sender == btnStartStop3)
+            {
+                startEvent = ScreamEvents.StartScream3;
+                otherBtn1 = btnStartStop1;
+                otherBtn2 = btnStartStop2;
             }
             else
             {
-                _screamOff.Stop();
+                return;
+            }
+
+            if (!_running)
+            {
+                _screamOff.ReceiveEvent(startEvent);
+                _running = true;
+                targetButton.Text = "Stop";
+                otherBtn1.Enabled = false;
+                otherBtn2.Enabled = false;
+            }
+            else
+            {
+                _screamOff.ReceiveEvent(ScreamEvents.EndScream);
                 _running = false;
-                btnStartStop.Text = "Start";
+                targetButton.Text = "Start";
+                otherBtn1.Enabled = true;
+                otherBtn2.Enabled = true;
             }
         }
 
@@ -129,6 +167,10 @@ namespace ScreamControl
         {
             _screamOff.ReceiveEvent(ScreamEvents.Begin);
             btnShow.Enabled = false;
+            btnStartStop1.Enabled = true;
+            btnStartStop2.Enabled = true;
+            btnStartStop3.Enabled = true;
+
         }
     }
 }

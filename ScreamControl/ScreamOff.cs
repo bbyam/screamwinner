@@ -53,12 +53,54 @@ namespace ScreamControl
 
         public void ReceiveEvent(ScreamEvents screamEvent)
         {
-            if (screamEvent == ScreamEvents.Begin)
+            switch (screamEvent)
             {
-                if (_blackCover.Opacity > 0)
-                {
-                    _showing = true;
-                }
+                case ScreamEvents.Begin:
+                    if (_blackCover.Opacity > 0)
+                    {
+                        _showing = true;
+                    }
+                    _scream1Sampled = false;
+                    _scream2Sampled = false;
+                    _scream3Sampled = false;
+                    _meterFade = false;
+                    _finish = false;
+                    _finishDelay = 0;
+                    break;
+
+                case ScreamEvents.StartScream1:
+                    _audioSampler.Start();
+                    _audioRunning = true;
+                    _meters.Start(0);
+                    _scream1Sampled = true;
+                    break;
+
+                case ScreamEvents.StartScream2:
+                    _audioSampler.Start();
+                    _audioRunning = true;
+                    _meters.Start(1);
+                    _scream2Sampled = true;
+                    break;
+
+                case ScreamEvents.StartScream3:
+                    _audioSampler.Start();
+                    _audioRunning = true;
+                    _meters.Start(2);
+                    _scream3Sampled = true;
+                    break;
+
+                case ScreamEvents.EndScream:
+                    _audioSampler.Stop();
+                    _audioRunning = false;
+                    _meterAnimateCount = 0;
+                    _nextMeterValue = 0.0;
+                    _prevMeterValue = 0.0;
+                    _meterFadeValue = Math.Min(_nextMeterValue, _prevMeterValue);
+                    _meterFade = true;
+                    break;
+
+                default:
+                    break;
             }
         }
 
@@ -66,6 +108,14 @@ namespace ScreamControl
         double _nextMeterValue = 0.0;
         double _prevMeterValue = 0.0;
         bool _showing = false;
+        bool _meterFade = false;
+        double _meterFadeValue = 0.0;
+
+        bool _scream1Sampled = false;
+        bool _scream2Sampled = false;
+        bool _scream3Sampled = false;
+        bool _finish = false;
+        int _finishDelay = 0;
 
         public void OnAnimate()
         {
@@ -99,22 +149,30 @@ namespace ScreamControl
                     _meters.ReceiveValue(newValue);
                 }
             }
-        }
+            else if (_meterFade)
+            {
+                _meterFadeValue -= 0.016667;
+                if (_meterFadeValue <= 0)
+                {
+                    _meterFadeValue = 0;
+                    _meterFade = false;
+                    if (_scream1Sampled && _scream2Sampled && _scream3Sampled)
+                    {
+                        _finish = true;
+                        _finishDelay = 0;
+                    }
+                }
+                _meters.ReceiveValue(_meterFadeValue);
+            }
 
-        public void Start()
-        {
-            _audioSampler.Start();
-            _audioRunning = true;
-
-            _meters.Start();
-        }
-
-        public void Stop()
-        {
-            _audioSampler.Stop();
-            _audioRunning = false;
-
-            _meters.Stop();
+            if (_finish)
+            {
+                if (++_finishDelay >= 30)
+                {
+                    _finish = false;
+                    _meters.DetermineWinner();
+                }
+            }
         }
     }
 }
