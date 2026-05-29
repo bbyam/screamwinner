@@ -96,6 +96,10 @@ namespace ScreamControl
 
             _animations.Add(_screamOff);
             CompositionTarget.Rendering += Animate;
+
+            btnStartStop1.Text = "Start" + Environment.NewLine + config.Option1.Text;
+            btnStartStop2.Text = "Start" + Environment.NewLine + config.Option2.Text;
+            btnStartStop3.Text = "Start" + Environment.NewLine + config.Option3.Text;
         }
 
         private void ScreamControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -149,7 +153,7 @@ namespace ScreamControl
             {
                 _screamOff.ReceiveEvent(startEvent);
                 _running = true;
-                targetButton.Text = "Stop";
+                targetButton.Text = targetButton.Text.Replace("Start", "Stop");
                 otherBtn1.Enabled = false;
                 otherBtn2.Enabled = false;
             }
@@ -157,7 +161,7 @@ namespace ScreamControl
             {
                 _screamOff.ReceiveEvent(ScreamEvents.EndScream);
                 _running = false;
-                targetButton.Text = "Start";
+                targetButton.Text = targetButton.Text.Replace("Stop", "Start");
                 otherBtn1.Enabled = true;
                 otherBtn2.Enabled = true;
             }

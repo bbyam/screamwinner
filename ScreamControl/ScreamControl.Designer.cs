@@ -39,7 +39,7 @@
             btnStartStop1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnStartStop1.Location = new Point(49, 169);
             btnStartStop1.Name = "btnStartStop1";
-            btnStartStop1.Size = new Size(205, 96);
+            btnStartStop1.Size = new Size(205, 126);
             btnStartStop1.TabIndex = 0;
             btnStartStop1.Text = "Start 1";
             btnStartStop1.UseVisualStyleBackColor = true;
@@ -61,7 +61,7 @@
             btnStartStop2.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnStartStop2.Location = new Point(272, 169);
             btnStartStop2.Name = "btnStartStop2";
-            btnStartStop2.Size = new Size(205, 96);
+            btnStartStop2.Size = new Size(205, 126);
             btnStartStop2.TabIndex = 2;
             btnStartStop2.Text = "Start 2";
             btnStartStop2.UseVisualStyleBackColor = true;
@@ -72,7 +72,7 @@
             btnStartStop3.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnStartStop3.Location = new Point(495, 169);
             btnStartStop3.Name = "btnStartStop3";
-            btnStartStop3.Size = new Size(205, 96);
+            btnStartStop3.Size = new Size(205, 126);
             btnStartStop3.TabIndex = 3;
             btnStartStop3.Text = "Start 3";
             btnStartStop3.UseVisualStyleBackColor = true;
