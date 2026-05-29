@@ -86,7 +86,7 @@ namespace ScreamControl
             _screamView.Height = viewHeight;
             _host.Show();
 
-            _screamView.Background = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
+            _screamView.Background = new SolidColorBrush(Color.FromArgb(255, 20, 20, 20));
 
             _screamOff = new(_audioSource, _screamView, config);
 
@@ -123,6 +123,12 @@ namespace ScreamControl
                 _running = false;
                 btnStartStop.Text = "Start";
             }
+        }
+
+        private void btnShow_Click(object sender, EventArgs e)
+        {
+            _screamOff.ReceiveEvent(ScreamEvents.Begin);
+            btnShow.Enabled = false;
         }
     }
 }

@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace ScreamControl
 {
-    internal interface IAnimation
+    public enum ScreamEvents
     {
-        void OnAnimate();
-        void ReceiveEvent(ScreamEvents screamEvent);
+        Begin,
+        StartScream1,
+        StartScream2,
+        StartScream3,
+        EndScream,
     }
 }

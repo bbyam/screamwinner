@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             btnStartStop = new Button();
+            btnShow = new Button();
             SuspendLayout();
             // 
             // btnStartStop
@@ -42,11 +43,23 @@
             btnStartStop.UseVisualStyleBackColor = true;
             btnStartStop.Click += btnStartStop_Click;
             // 
+            // btnShow
+            // 
+            btnShow.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnShow.Location = new Point(49, 42);
+            btnShow.Name = "btnShow";
+            btnShow.Size = new Size(121, 58);
+            btnShow.TabIndex = 1;
+            btnShow.Text = "Show";
+            btnShow.UseVisualStyleBackColor = true;
+            btnShow.Click += btnShow_Click;
+            // 
             // ScreamControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnShow);
             Controls.Add(btnStartStop);
             Name = "ScreamControl";
             Text = "Scream Winner";
@@ -58,5 +71,6 @@
         #endregion
 
         private Button btnStartStop;
+        private Button btnShow;
     }
 }
