@@ -12,6 +12,7 @@ namespace ScreamControl
     {
         private double _maxPeak = 0.0;
         private bool _pendingReset = false;
+        private bool _firstSample = true;
         private WaveInEvent _waveIn = new();
 
         public AudioSource()
@@ -29,6 +30,13 @@ namespace ScreamControl
                 _pendingReset = false;
             }
 
+            // Discard any noise from the first sample
+            if (_firstSample)
+            {
+                _firstSample = false;
+                return;
+            }
+
             for (int index = 0; index < e.BytesRecorded; index += 2)
             {
                 var sample = (short)((e.Buffer[index + 1] << 8) | e.Buffer[index]);
@@ -42,6 +50,7 @@ namespace ScreamControl
         {
             _maxPeak = 0.0;
             _pendingReset = true;
+            _firstSample = true;
             _waveIn.StartRecording();
         }
 
@@ -50,6 +59,7 @@ namespace ScreamControl
             _waveIn.StopRecording();
             _maxPeak = 0.0;
             _pendingReset = true;
+            _firstSample = true;
         }
 
         public void Dispose()

@@ -2,6 +2,7 @@
 using ScreamViewLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,13 +91,13 @@ namespace ScreamControl
                     break;
 
                 case ScreamEvents.EndScream:
-                    _audioSampler.Stop();
+                    _meterFadeValue = Math.Min(_nextMeterValue, _prevMeterValue);
+                    _meterFade = true;
                     _audioRunning = false;
+                    _audioSampler.Stop();
                     _meterAnimateCount = 0;
                     _nextMeterValue = 0.0;
                     _prevMeterValue = 0.0;
-                    _meterFadeValue = Math.Min(_nextMeterValue, _prevMeterValue);
-                    _meterFade = true;
                     break;
 
                 default:
@@ -151,7 +152,7 @@ namespace ScreamControl
             }
             else if (_meterFade)
             {
-                _meterFadeValue -= 0.016667;
+                _meterFadeValue -= 0.02;
                 if (_meterFadeValue <= 0)
                 {
                     _meterFadeValue = 0;
