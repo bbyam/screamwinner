@@ -125,11 +125,28 @@ namespace ScreamControl
         }
 
 
+        int _meterAnimateCount = 0;
+        double _nextMeterValue = 0.0;
+        double _prevMeterValue = 0.0;
         public void OnAnimate()
         {
             if (_audioRunning)
             {
-                _meter.MeterValue = _audioSampler.GetMaxPeak();
+                // This assumes OnAnimate is called 60 times per second
+                if (++_meterAnimateCount >= 4)
+                {
+                    _meter.MeterValue = _nextMeterValue;
+                    _prevMeterValue = _nextMeterValue;
+                    _nextMeterValue = _audioSampler.GetMaxPeak();
+                    _meterAnimateCount = 0;
+                }
+                else
+                {
+                    // Smoothly animate towards the next meter value
+                    var delta = _nextMeterValue - _prevMeterValue;
+                    var step = delta * (_meterAnimateCount / 4.0);
+                    _meter.MeterValue = _prevMeterValue + step;
+                }
             }
 
 
