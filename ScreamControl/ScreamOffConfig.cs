@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,10 @@ namespace ScreamControl
         public TextOption Option3 { get; private set; }
 
         public List<ImageOption> Images { get; private set; } = new List<ImageOption>();
+
+        public int DeviceIndex { get; private set; }
+
+        public double MicMultiplier { get; private set; }
 
         public void LoadFromFile(string filename)
         {
@@ -205,6 +210,24 @@ namespace ScreamControl
                             Top = top
                         });
                     }
+                    else if (key.StartsWith("DeviceName"))
+                    {
+                        int num = GetDeviceNumberFromName(value);
+                        DeviceIndex = num;
+                    }
+                    else if (key.StartsWith("MicMultiplier"))
+                    {
+                        if (!double.TryParse(value, out var multiplier))
+                        {
+                            throw new Exception($"Invalid MicMultiplier value");
+                        }
+                        if (multiplier <= 0)
+                        {
+                            throw new Exception($"MicMultiplier value must be greater than 0");
+                        }
+
+                        MicMultiplier = multiplier;
+                    }
                     else
                     {
                         throw new Exception($"Invalid configuration value '{key}' in {filename} on line {lineNum}");
@@ -244,6 +267,18 @@ namespace ScreamControl
             }
 
             return FontLocation.NotExsit;
+        }
+
+        private int GetDeviceNumberFromName(string name)
+        {
+            for (int i = 0; i < WaveInEvent.DeviceCount; i++)
+            {
+                var deviceInfo = WaveInEvent.GetCapabilities(i);
+                if (deviceInfo.ProductName.Contains(name, StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+
+            return -1;
         }
     }
 }
