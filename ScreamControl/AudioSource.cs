@@ -15,11 +15,19 @@ namespace ScreamControl
         private bool _firstSample = true;
         private WaveInEvent _waveIn = new();
 
-        public AudioSource()
+        public AudioSource(int deviceIndex)
         {
             _waveIn.WaveFormat = new WaveFormat(44100, 16, 1);
             _waveIn.BufferMilliseconds = 30;
             _waveIn.DataAvailable += OnDataAvailable;
+
+            int index = deviceIndex;
+            if(index == -1)
+                MessageBox.Show("No microphone found. Using default microphone.", "Audio Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            _waveIn.DeviceNumber = index;
+
+            //MessageBox.Show($"Device index: {index}\nDevice name: {WaveIn.GetCapabilities(deviceIndex).ProductName}", "Test", MessageBoxButtons.OK);
         }
 
         private void OnDataAvailable(object? sender, WaveInEventArgs e)
