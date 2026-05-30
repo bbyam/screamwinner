@@ -57,7 +57,7 @@ namespace ScreamControl
             _meters[_targetMeter].BeginMaxValue();
         }
 
-        public void DetermineWinner()
+        public int DetermineWinner()
         {
             _meters[0].MeterValue = _meters[0].MaxValue;
             _meters[2].MeterValue = _meters[2].MaxValue;
@@ -75,6 +75,12 @@ namespace ScreamControl
             _meters[0].EndMaxValue();
             _meters[1].EndMaxValue();
             _meters[2].EndMaxValue();
+
+            if (meter1Win)
+                return 0;
+            if (meter2Win)
+                return 1;
+            return 2;
         }
 
         private void SetInitialColors()

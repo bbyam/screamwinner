@@ -1,4 +1,4 @@
-#define DEBUG_ONE_SCREEN
+//#define DEBUG_ONE_SCREEN
 
 using ScreamViewLib;
 using System.Diagnostics;

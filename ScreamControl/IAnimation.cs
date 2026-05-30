@@ -10,5 +10,6 @@ namespace ScreamControl
     {
         void OnAnimate();
         void ReceiveEvent(ScreamEvents screamEvent);
+        bool IsDead();
     }
 }

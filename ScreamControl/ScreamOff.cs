@@ -17,10 +17,13 @@ namespace ScreamControl
         private ScreamOffConfig _config;
         private IAudioSampler _audioSampler;
         private ScreamViewLib.ScreamView _screamView;
+        private readonly double _scaleFactor = 1.0;
 
         private Header _header = null!;
 
         private TripleMeter _meters = null!;
+
+        private List<IAnimation> _effects = new();
 
         private System.Windows.Shapes.Rectangle _blackCover = new();
 
@@ -36,9 +39,9 @@ namespace ScreamControl
             _meters = new();
             _meters.CreateOnCanvas(_screamView);
 
-            var scaleFactor = _screamView.Width / 3840.0; // Base scale factor on a 3840x2160p screen
+            _scaleFactor = _screamView.Width / 3840.0; // Base scale factor on a 3840x2160p screen
 
-            _header = new(scaleFactor, _config);
+            _header = new(_scaleFactor, _config);
             _header.CreateOnCanvas(_screamView);
 
             _blackCover.Fill = new SolidColorBrush(Colors.Black);
@@ -103,6 +106,11 @@ namespace ScreamControl
                 default:
                     break;
             }
+
+            foreach (var effect in _effects)
+            {
+                effect.ReceiveEvent(screamEvent);
+            }
         }
 
         int _meterAnimateCount = 0;
@@ -117,6 +125,11 @@ namespace ScreamControl
         bool _scream3Sampled = false;
         bool _finish = false;
         int _finishDelay = 0;
+
+        public bool IsDead()
+        {
+            return false;
+        }
 
         public void OnAnimate()
         {
@@ -171,9 +184,17 @@ namespace ScreamControl
                 if (++_finishDelay >= 30)
                 {
                     _finish = false;
-                    _meters.DetermineWinner();
+                    var winner = _meters.DetermineWinner();
+                    var winnerOffet = -1 + winner;
+                    _effects.Add(new ConfettiBurst(_screamView, 0.5 + (0.3 * winnerOffet), 0.5, _scaleFactor));
                 }
             }
+
+            foreach (var effect in _effects)
+            {
+                effect.OnAnimate();
+            }
+            _effects.RemoveAll(e => e.IsDead());
         }
     }
 }
