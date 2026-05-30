@@ -22,6 +22,8 @@ namespace ScreamControl
 
         private TripleMeter _meters = null!;
 
+        private double _multiplier = 1.0;
+
         private System.Windows.Shapes.Rectangle _blackCover = new();
 
         private bool _audioRunning = false;
@@ -30,6 +32,8 @@ namespace ScreamControl
         {
             _config = config;
             _audioSampler = audioSampler;
+
+            _multiplier = config.MicMultiplier;
 
             _screamView = screamView;
 
@@ -138,7 +142,8 @@ namespace ScreamControl
                 {
                     _meters.ReceiveValue(_nextMeterValue);
                     _prevMeterValue = _nextMeterValue;
-                    _nextMeterValue = _audioSampler.GetMaxPeak();
+                    _nextMeterValue = Math.Clamp(_audioSampler.GetMaxPeak() * _multiplier, 0.0, 1.0);
+                    Debug.WriteLine(_nextMeterValue);
                     _meterAnimateCount = 0;
                 }
                 else
