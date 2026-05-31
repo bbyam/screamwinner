@@ -1,5 +1,4 @@
-﻿using NAudio.Wave;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,9 +59,9 @@ namespace ScreamControl
 
         public List<ImageOption> Images { get; private set; } = new List<ImageOption>();
 
-        public int DeviceIndex { get; private set; }
+        public string? DeviceName { get; private set; } = null;
 
-        public double MicMultiplier { get; private set; }
+        public double MicMultiplier { get; private set; } = 1;
 
         public void LoadFromFile(string filename)
         {
@@ -212,8 +211,7 @@ namespace ScreamControl
                     }
                     else if (key.StartsWith("DeviceName"))
                     {
-                        int num = GetDeviceNumberFromName(value);
-                        DeviceIndex = num;
+                        DeviceName = value;
                     }
                     else if (key.StartsWith("MicMultiplier"))
                     {
@@ -267,18 +265,6 @@ namespace ScreamControl
             }
 
             return FontLocation.NotExsit;
-        }
-
-        private int GetDeviceNumberFromName(string name)
-        {
-            for (int i = 0; i < WaveInEvent.DeviceCount; i++)
-            {
-                var deviceInfo = WaveInEvent.GetCapabilities(i);
-                if (deviceInfo.ProductName.Contains(name, StringComparison.OrdinalIgnoreCase))
-                    return i;
-            }
-
-            return -1;
         }
     }
 }

@@ -15,19 +15,22 @@ namespace ScreamControl
         private bool _firstSample = true;
         private WaveInEvent _waveIn = new();
 
-        public AudioSource(int deviceIndex)
+        public AudioSource(ScreamOffConfig config)
         {
             _waveIn.WaveFormat = new WaveFormat(44100, 16, 1);
             _waveIn.BufferMilliseconds = 30;
             _waveIn.DataAvailable += OnDataAvailable;
 
-            int index = deviceIndex;
-            if(index == -1)
-                MessageBox.Show("No microphone found. Using default microphone.", "Audio Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            int index = -1; // Default
+
+            if (!string.IsNullOrEmpty(config.DeviceName))
+            {
+                index = GetDeviceNumberFromName(config.DeviceName);
+                if (index == -1)
+                    MessageBox.Show($"{config.DeviceName} not found. Using default microphone.", "Desired Microphone Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             _waveIn.DeviceNumber = index;
-
-            //MessageBox.Show($"Device index: {index}\nDevice name: {WaveIn.GetCapabilities(deviceIndex).ProductName}", "Test", MessageBoxButtons.OK);
         }
 
         private void OnDataAvailable(object? sender, WaveInEventArgs e)
@@ -52,6 +55,18 @@ namespace ScreamControl
                 if (sample32 > _maxPeak)
                     _maxPeak = sample32;
             }
+        }
+
+        private int GetDeviceNumberFromName(string name)
+        {
+            for (int i = 0; i < WaveInEvent.DeviceCount; i++)
+            {
+                var deviceInfo = WaveInEvent.GetCapabilities(i);
+                if (deviceInfo.ProductName.Contains(name, StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+
+            return -1;
         }
 
         public void Start()

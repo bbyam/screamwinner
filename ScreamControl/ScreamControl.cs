@@ -33,7 +33,6 @@ namespace ScreamControl
         private readonly HostWindow _host;
         private ScreamViewLib.ScreamView _screamView = null!;
 
-        //private AudioSource _audioSource = new(); Commented out because it's not used elsewhere, and I can initialize audio source with the device number after config is loaded
         private ScreamOff _screamOff = null!;
 
         private readonly List<IAnimation> _animations = [];
@@ -92,7 +91,8 @@ namespace ScreamControl
 
             _screamView.Background = new SolidColorBrush(Color.FromArgb(255, 20, 20, 20));
 
-            _screamOff = new(new AudioSource(config.DeviceIndex), _screamView, config);
+            var audioSource = new AudioSource(config);
+            _screamOff = new(audioSource, _screamView, config);
 
             _animations.Add(_screamOff);
             CompositionTarget.Rendering += Animate;
