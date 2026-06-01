@@ -59,6 +59,10 @@ namespace ScreamControl
 
         public List<ImageOption> Images { get; private set; } = new List<ImageOption>();
 
+        public string? DeviceName { get; private set; } = null;
+
+        public double MicMultiplier { get; private set; } = 1;
+
         public void LoadFromFile(string filename)
         {
             if (!File.Exists(filename))
@@ -204,6 +208,23 @@ namespace ScreamControl
                             Left = left,
                             Top = top
                         });
+                    }
+                    else if (key.StartsWith("DeviceName"))
+                    {
+                        DeviceName = value;
+                    }
+                    else if (key.StartsWith("MicMultiplier"))
+                    {
+                        if (!double.TryParse(value, out var multiplier))
+                        {
+                            throw new Exception($"Invalid MicMultiplier value");
+                        }
+                        if (multiplier <= 0)
+                        {
+                            throw new Exception($"MicMultiplier value must be greater than 0");
+                        }
+
+                        MicMultiplier = multiplier;
                     }
                     else
                     {
