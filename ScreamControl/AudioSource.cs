@@ -10,6 +10,7 @@ namespace ScreamControl
 {
     internal class AudioSource : IAudioSampler
     {
+        private readonly double _multiplier;
         private double _maxPeak = 0.0;
         private bool _pendingReset = false;
         private bool _firstSample = true;
@@ -31,6 +32,7 @@ namespace ScreamControl
             }
 
             _waveIn.DeviceNumber = index;
+            _multiplier = config.MicMultiplier;
         }
 
         private void OnDataAvailable(object? sender, WaveInEventArgs e)
@@ -100,7 +102,7 @@ namespace ScreamControl
             // Flag max peak to reset on the next sample update
             _pendingReset = true;
 
-            return _maxPeak;
+            return Math.Clamp(_maxPeak * _multiplier, 0, 1);
         }
     }
 }
