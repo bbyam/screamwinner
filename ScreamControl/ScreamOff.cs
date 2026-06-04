@@ -73,6 +73,7 @@ namespace ScreamControl
                     break;
 
                 case ScreamEvents.StartScream1:
+                    _activeSlot = 0;
                     _audioSampler.Start();
                     _audioRunning = true;
                     _meters.Start(0);
@@ -80,6 +81,7 @@ namespace ScreamControl
                     break;
 
                 case ScreamEvents.StartScream2:
+                    _activeSlot = 1;
                     _audioSampler.Start();
                     _audioRunning = true;
                     _meters.Start(1);
@@ -87,6 +89,7 @@ namespace ScreamControl
                     break;
 
                 case ScreamEvents.StartScream3:
+                    _activeSlot = 2;
                     _audioSampler.Start();
                     _audioRunning = true;
                     _meters.Start(2);
@@ -151,7 +154,7 @@ namespace ScreamControl
                 {
                     _meters.ReceiveValue(_nextMeterValue);
                     _prevMeterValue = _nextMeterValue;
-                    _nextMeterValue = _audioSampler.GetMaxPeak();
+                    _nextMeterValue = CheatTheWinner();
                     _meterAnimateCount = 0;
                 }
                 else
@@ -195,6 +198,52 @@ namespace ScreamControl
                 effect.OnAnimate();
             }
             _effects.RemoveAll(e => e.IsDead());
+        }
+
+        private int _activeSlot = 0;
+        private double _winnerSample = 0.0;
+        private double _loserSample = 0.0;
+        private double _cheatMultiplier = 1.0;
+        public double CheatTheWinner()
+        {
+            var currSample = _audioSampler.GetMaxPeak();
+            // Don't let any bar reach 100
+            if (currSample >= 0.9)
+            {
+                var factor = (currSample - 0.9) * 10;
+                currSample = 0.9 + 0.05 * factor;
+            }
+
+            if (_config.WinnerBias == -1)
+                return currSample;
+
+            // If the cheated winner is after this slot, reduce all samples to 70% and record the highest value seen as loserSample
+            if (_activeSlot < _config.WinnerBias)
+            {
+                currSample *= 0.7;
+                _loserSample = Math.Max(currSample, _loserSample);
+            }
+            // If this is the cheated winner slot, multiply the sample by the cheat multiplier
+            // Record the highest value as winnerSample
+            // Slowly increase the cheat multiplier as long as the winnerSample is below the loserSample, up to a maximum of 1.43 (so that a 70% sample can be boosted to 100%)
+            if (_activeSlot == _config.WinnerBias)
+            {
+                currSample *= _cheatMultiplier;
+                if (currSample > 1.0)
+                    currSample = 1.0;
+                _winnerSample = Math.Max(currSample, _winnerSample);
+                if (_winnerSample < _loserSample)
+                {
+                    _cheatMultiplier = Math.Min(_cheatMultiplier + 0.0179, 1.43);
+                }
+            }
+            // If this slot is after the cheated winner, keep it below the winner
+            if (_activeSlot > _config.WinnerBias)
+            {
+                currSample *= (_winnerSample * 0.95);
+            }
+
+            return currSample;
         }
     }
 }

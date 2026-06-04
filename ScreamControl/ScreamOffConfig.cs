@@ -62,6 +62,7 @@ namespace ScreamControl
         public string? DeviceName { get; private set; } = null;
 
         public double MicMultiplier { get; private set; } = 1;
+        public int WinnerBias { get; private set; } = -1;
 
         public void LoadFromFile(string filename)
         {
@@ -225,6 +226,21 @@ namespace ScreamControl
                         }
 
                         MicMultiplier = multiplier;
+                    }
+                    else if (key.StartsWith("WinnerBias"))
+                    {
+                        if (!int.TryParse(value, out var bias))
+                        {
+                            throw new Exception($"Invalid WinnerBias value");
+                        }
+                        if (bias == 1 || bias == 2 || bias == 3)
+                        {
+                            WinnerBias = bias - 1;
+                        }
+                        else
+                        {
+                            throw new Exception($"WinnerBias value must be 0, 1, or 2");
+                        }
                     }
                     else
                     {

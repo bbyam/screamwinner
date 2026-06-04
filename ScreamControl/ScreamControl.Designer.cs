@@ -59,7 +59,7 @@
             // btnStartStop2
             // 
             btnStartStop2.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnStartStop2.Location = new Point(272, 169);
+            btnStartStop2.Location = new Point(391, 169);
             btnStartStop2.Name = "btnStartStop2";
             btnStartStop2.Size = new Size(205, 126);
             btnStartStop2.TabIndex = 2;
@@ -70,7 +70,7 @@
             // btnStartStop3
             // 
             btnStartStop3.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnStartStop3.Location = new Point(495, 169);
+            btnStartStop3.Location = new Point(736, 169);
             btnStartStop3.Name = "btnStartStop3";
             btnStartStop3.Size = new Size(205, 126);
             btnStartStop3.TabIndex = 3;
@@ -82,7 +82,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(960, 450);
             Controls.Add(btnStartStop3);
             Controls.Add(btnStartStop2);
             Controls.Add(btnShow);

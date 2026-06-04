@@ -63,8 +63,8 @@ namespace ScreamControl
             _meters[2].MeterValue = _meters[2].MaxValue;
             _meters[1].MeterValue = _meters[1].MaxValue;
             var meter1Win = _meters[0].MaxValue >= _meters[1].MaxValue && _meters[0].MaxValue >= _meters[2].MaxValue;
-            var meter2Win = _meters[1].MaxValue >= _meters[0].MaxValue && _meters[1].MaxValue >= _meters[2].MaxValue;
-            var meter3Win = _meters[2].MaxValue >= _meters[0].MaxValue && _meters[2].MaxValue >= _meters[1].MaxValue;
+            var meter2Win = !meter1Win && _meters[1].MaxValue >= _meters[0].MaxValue && _meters[1].MaxValue >= _meters[2].MaxValue;
+            var meter3Win = !meter1Win && !meter2Win && _meters[2].MaxValue >= _meters[0].MaxValue && _meters[2].MaxValue >= _meters[1].MaxValue;
             var meter1FinalColor = meter1Win ? WinnerColor : LoserColor;
             var meter2FinalColor = meter2Win ? WinnerColor : LoserColor;
             var meter3FinalColor = meter3Win ? WinnerColor : LoserColor;

@@ -54,8 +54,8 @@ namespace ScreamControl
             var primaryScreen = Screen.PrimaryScreen ?? Screen.FromControl(this);
 
             var controlScreenSize = primaryScreen.Bounds;
-            var startupX = (controlScreenSize.Width / 2) - (this.Width / 2);
-            var startupY = (controlScreenSize.Height / 2) - (this.Height / 2);
+            var startupX = controlScreenSize.X + (controlScreenSize.Width / 2) - (this.Width / 2);
+            var startupY = controlScreenSize.Y + (controlScreenSize.Height / 2) - (this.Height / 2);
 
 #if DEBUG_ONE_SCREEN
             startupX = controlScreenSize.Width / 2 + 10;
@@ -115,6 +115,7 @@ namespace ScreamControl
             }
         }
 
+        DateTime _stopBlockTime = DateTime.MaxValue;
         // TEMPORARY: Start/Stop ScreamOff
         private bool _running = false;
         private void btnStartStop_Click(object sender, EventArgs e)
@@ -154,14 +155,19 @@ namespace ScreamControl
                 _screamOff.ReceiveEvent(startEvent);
                 _running = true;
                 targetButton.Text = targetButton.Text.Replace("Start", "Stop");
+                targetButton.BackColor = System.Drawing.Color.FromArgb(255, 255, 50, 50);
                 otherBtn1.Enabled = false;
                 otherBtn2.Enabled = false;
+                _stopBlockTime = DateTime.Now;
             }
             else
             {
+                if ((DateTime.Now - _stopBlockTime).TotalMilliseconds < 200)
+                    return;
                 _screamOff.ReceiveEvent(ScreamEvents.EndScream);
                 _running = false;
                 targetButton.Text = targetButton.Text.Replace("Stop", "Start");
+                targetButton.BackColor = System.Drawing.Color.FromArgb(255, 100, 255, 100);
                 otherBtn1.Enabled = true;
                 otherBtn2.Enabled = true;
             }
