@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -190,6 +191,13 @@ namespace ScreamControl
                     var winner = _meters.DetermineWinner();
                     var winnerOffet = -1 + winner;
                     _effects.Add(new ConfettiBurst(_screamView, 0.5 + (0.3 * winnerOffet), 0.5, _scaleFactor));
+                    if (_config.WinSound != null)
+                    {
+                        using (SoundPlayer player = new SoundPlayer(_config.WinSound))
+                        {
+                            player.Play();
+                        }
+                    }
                 }
             }
 

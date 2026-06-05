@@ -59,6 +59,8 @@ namespace ScreamControl
 
         public List<ImageOption> Images { get; private set; } = new List<ImageOption>();
 
+        public string? WinSound { get; private set; } = null;
+
         public string? DeviceName { get; private set; } = null;
 
         public double MicMultiplier { get; private set; } = 1;
@@ -209,6 +211,19 @@ namespace ScreamControl
                             Left = left,
                             Top = top
                         });
+                    }
+                    else if (key.StartsWith("WinSound"))
+                    {
+                        var filePath = Path.GetFullPath("Assets" + Path.DirectorySeparatorChar + value);
+                        if (!File.Exists(filePath))
+                        {
+                            throw new Exception($"Win Sound file '{value}' does not exist in Assets folder, from {filename} on line {lineNum}");
+                        }
+                        if (Path.GetExtension(filePath).ToLower() != ".wav")
+                        {
+                            throw new Exception($"Win Sound file '{value}' must be a .wav file, from {filename} on line {lineNum}");
+                        }
+                        WinSound = filePath;
                     }
                     else if (key.StartsWith("DeviceName"))
                     {
